@@ -247,7 +247,7 @@ header::after{
 .tgb:hover:not(.on){border-color:var(--bear-gold);color:var(--bear-gold)}
 
 /* ── ORG-CHART TREE ───────────────────────────────────────────────────────── */
-.otree-wrap{overflow-x:auto;padding:4px 24px 14px;display:flex;flex-direction:column;align-items:center;scrollbar-width:none;-ms-overflow-style:none}
+.otree-wrap{overflow-x:auto;padding:4px 0 14px;display:flex;flex-direction:column;align-items:flex-start;scrollbar-width:none;-ms-overflow-style:none}
 .tree-vline{width:2px;height:16px;background:#d0c8b8;flex-shrink:0}
 .tree-main-node{z-index:1}
 .otree-ul{display:flex;padding-top:18px;position:relative;list-style:none;margin:0;padding-left:0;padding-bottom:0}
@@ -297,10 +297,11 @@ header::after{
 .tree-dn-outer:active{cursor:grabbing}
 .tree-dn-outer::-webkit-scrollbar{height:0;display:none}
 .otree-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain}.otree-wrap::-webkit-scrollbar{display:none}
-.tree-dn-center{display:inline-flex;flex-direction:column;align-items:center;min-width:100%;padding:0 24px}
-.tree-slider-row{display:none;align-items:center;gap:8px;padding:6px 4px 2px;margin-top:2px}
-.tree-slider-row span{color:#555;font-size:.75rem;user-select:none}
-#tree-slider{flex:1;accent-color:var(--bear-gold);cursor:pointer;height:4px}
+.tree-dn-center{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:100%;padding:0 60px;box-sizing:border-box}
+.tree-slider-row{display:none;align-items:center;gap:8px;padding:4px 2px;margin:4px 0 0}
+.tree-slider-row span{color:#aaa;font-size:.72rem;user-select:none;cursor:pointer}
+#tree-slider,#tree-slider-up{flex:1;accent-color:var(--bear-gold);cursor:pointer;height:4px}
+.tree-slider-label{font-size:.62rem;color:#aaa;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;margin-right:4px;user-select:none}
 
 /* ── LINK COLORS ──────────────────────────────────────────────────────────── */
 a{color:var(--bear-gold)}
@@ -665,6 +666,12 @@ a:hover{color:var(--bear-gold-light)}
       <button class="tgb" data-td="dn" data-tv="2">2</button>
       <button class="tgb" data-td="dn" data-tv="3">3</button>
     </div>
+    <div class="tree-slider-row" id="tree-slider-up-row">
+      <span class="tree-slider-label">⬆ Esivanhemmat</span>
+      <span onclick="(function(){var s=document.getElementById('tree-slider-up'),el=document.getElementById('treeview-up');s.value=Math.max(0,+s.value-80);el.scrollLeft=+s.value;})()">◀</span>
+      <input type="range" id="tree-slider-up" min="0" value="0" step="2">
+      <span onclick="(function(){var s=document.getElementById('tree-slider-up'),el=document.getElementById('treeview-up');s.value=Math.min(+s.max,+s.value+80);el.scrollLeft=+s.value;})()">▶</span>
+    </div>
     <div class="otree-wrap" id="treeview-up"></div>
     <div class="tree-dn-outer" id="treeview-dn">
       <div class="tree-dn-center" id="treeview-dn-c">
@@ -672,9 +679,10 @@ a:hover{color:var(--bear-gold-light)}
       </div>
     </div>
     <div class="tree-slider-row" id="tree-slider-row">
-      <span>◀</span>
+      <span class="tree-slider-label">⬇ Jälkeläiset</span>
+      <span onclick="(function(){var s=document.getElementById('tree-slider'),el=document.getElementById('treeview-dn');s.value=Math.max(0,+s.value-80);el.scrollLeft=+s.value;})()">◀</span>
       <input type="range" id="tree-slider" min="0" value="0" step="2">
-      <span>▶</span>
+      <span onclick="(function(){var s=document.getElementById('tree-slider'),el=document.getElementById('treeview-dn');s.value=Math.min(+s.max,+s.value+80);el.scrollLeft=+s.value;})()">▶</span>
     </div>
     <div class="tree-legend" data-i18n="tree_legend">Katkoviiva&#x2011;reunus&nbsp;= sisarus &nbsp;·&nbsp; Klikkaa solmua navigoidaksesi</div>
   </div>
@@ -975,7 +983,7 @@ function renderTree(id){
       hUp+='<div class="tree-vline"></div>';
     }
   }
-  document.getElementById('treeview-up').innerHTML=hUp;
+  document.getElementById('treeview-up').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;min-width:fit-content;padding:0 60px;margin:0 auto;">'+hUp+'</div>';
 
   // ── Taso 0: valittu koira + täyssisarukset + jälkeläiset (liukusäädettävä) ─
   var fsibs=gfsb(id);
@@ -1005,31 +1013,43 @@ function renderTree(id){
   var dnCenter=document.getElementById('treeview-dn-c');
   dnCenter.innerHTML=hDn;
 
-  // Päivitä liukusäädin molemmille puille
+  // Päivitä liukukytkimet erikseen molemmille puille
   setTimeout(function(){
     var upEl=document.getElementById('treeview-up');
-    var maxDn=dnEl.scrollWidth-dnEl.clientWidth;
+    // Up tree slider
     var maxUp=upEl.scrollWidth-upEl.clientWidth;
-    var maxScroll=Math.max(maxDn,maxUp);
+    var rowUp=document.getElementById('tree-slider-up-row');
+    var slUp=document.getElementById('tree-slider-up');
+    if(maxUp>10){
+      var cUp=Math.round(maxUp/2);
+      upEl.scrollLeft=cUp;
+      slUp.max=maxUp;slUp.value=cUp;
+      rowUp.style.display='flex';
+    } else {
+      upEl.scrollLeft=0;
+      rowUp.style.display='none';
+    }
+    // Down tree slider
+    var maxDn=dnEl.scrollWidth-dnEl.clientWidth;
     var row=document.getElementById('tree-slider-row');
     var sl=document.getElementById('tree-slider');
-    if(maxScroll>10){
-      var center=Math.round(maxScroll/2);
-      dnEl.scrollLeft=center;
-      upEl.scrollLeft=Math.min(center,maxUp);
-      sl.max=maxScroll;sl.value=center;
+    if(maxDn>10){
+      var cDn=Math.round(maxDn/2);
+      dnEl.scrollLeft=cDn;
+      sl.max=maxDn;sl.value=cDn;
       row.style.display='flex';
     } else {
-      dnEl.scrollLeft=0;upEl.scrollLeft=0;
+      dnEl.scrollLeft=0;
       row.style.display='none';
     }
   },80);
 }
 // Slider scrollaa alaosan sukupuun
 document.getElementById('tree-slider').addEventListener('input',function(){
-  var v=parseInt(this.value);
-  document.getElementById('treeview-dn').scrollLeft=v;
-  document.getElementById('treeview-up').scrollLeft=v;
+  document.getElementById('treeview-dn').scrollLeft=parseInt(this.value);
+});
+document.getElementById('tree-slider-up').addEventListener('input',function(){
+  document.getElementById('treeview-up').scrollLeft=parseInt(this.value);
 });
 // Generation controls
 document.querySelectorAll('.tgb').forEach(function(btn){
@@ -2760,12 +2780,12 @@ function toggleSrcPanel() {
         var dx=startX-x;
         el.scrollLeft=scrollStart+dx;
         // Sync slider if present
-        var sl=document.getElementById('tree-slider');
-        if(sl&&(el.id==='treeview-dn'||el.id==='treeview-up')){
-          sl.value=el.scrollLeft;
-          // Sync sibling tree scroll too
-          var sibling=el.id==='treeview-dn'?document.getElementById('treeview-up'):document.getElementById('treeview-dn');
-          if(sibling)sibling.scrollLeft=el.scrollLeft;
+        if(el.id==='treeview-dn'){
+          var sl=document.getElementById('tree-slider');
+          if(sl)sl.value=el.scrollLeft;
+        } else if(el.id==='treeview-up'){
+          var slUp=document.getElementById('tree-slider-up');
+          if(slUp)slUp.value=el.scrollLeft;
         }
         if(Math.abs(dx)>4&&e.cancelable)e.preventDefault();
       }
