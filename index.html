@@ -23,7 +23,7 @@ body{font-family:var(--f);background:#faf9f6;color:#1a1a1a}
 
 /* ── HEADER ───────────────────────────────────────────────────────────────── */
 header{
-  background:var(--bear-black);
+  background:#fff;
   border-bottom:2px solid var(--bear-gold);
   padding:0;
   display:flex;align-items:stretch;
@@ -35,9 +35,9 @@ header::after{
 }
 .h-logo{
   width:90px;height:90px;flex-shrink:0;
-  background:var(--bear-black);
+  background:#f5f2ec;
   display:flex;align-items:center;justify-content:center;
-  padding:8px;border-right:1px solid #222;
+  padding:8px;border-right:1px solid #e0d8c8;
 }
 .h-logo img{width:74px;height:74px;object-fit:contain}
 .h-text{
@@ -47,17 +47,17 @@ header::after{
 .h-title{
   font-family:'Cinzel','Times New Roman',serif;
   font-size:1.25rem;font-weight:900;letter-spacing:.05em;
-  color:#fff;line-height:1.2;
+  color:#1a1a1a;line-height:1.2;
 }
 .h-sub{
   font-size:.78rem;color:var(--bear-gold);
   letter-spacing:.08em;text-transform:uppercase;
   margin-top:3px;font-weight:600;
 }
-.h-meta{font-size:.72rem;color:#666;margin-top:4px}
+.h-meta{font-size:.72rem;color:#888;margin-top:4px}
 .hbg{
-  background:rgba(200,168,75,.12);
-  border:1px solid rgba(200,168,75,.3);
+  background:#faf7f0;
+  border:1px solid rgba(200,168,75,.4);
   border-radius:4px;padding:3px 10px;font-size:.72rem;
   color:var(--bear-gold);letter-spacing:.05em;
   align-self:center;margin-right:16px;white-space:nowrap;font-weight:700;
@@ -2248,7 +2248,7 @@ function renderMendelTable(m,g1,g2){
 ══════════════════════════════════════════════════════════════════════════ */
 
 // Viimeisin päivämäärä, jolloin Kennelliiton tietoja on haettu tietokantaan
-var KENNELLIITTO_DB_CHECKED = '16.8.2026';
+var KENNELLIITTO_DB_CHECKED = '17.8.2026';
 
 function SOURCE_TYPES_GET(){return {
   original_report: {icon:'✅', cls:'src-original', label:t('srctype_original'), desc:''},
@@ -2342,7 +2342,7 @@ function updateStatCounts(){
     el.textContent = n;
   });
   var hbg = document.getElementById('hbg-count');
-  if(hbg) hbg.textContent = all.length + ' koiraa · 16.8.2026';
+  if(hbg) hbg.textContent = all.length + ' koiraa · 17.8.2026';
 }
 updateStatCounts();
 function toggleFilter(cat) {
